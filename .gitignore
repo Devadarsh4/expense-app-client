@@ -24,3 +24,9 @@ dist-ssr
 *.sw?
 node_modules/
 package-lock.json
+index.html
+
+tsconfig.app.json
+tsconfig.json
+tsconfig.node.json
+vite.config.ts
