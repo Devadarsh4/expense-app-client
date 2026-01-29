@@ -30,7 +30,7 @@ function Student4() {
         </>
       )}
     </div>
-  )
+  );
 }
 
 export default Student4;
