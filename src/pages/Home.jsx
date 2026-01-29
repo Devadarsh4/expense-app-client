@@ -1,7 +1,7 @@
-function Login(){
-    return(
-        <div className="conatiner ">
-            <h3 className=" text-center">welcome to expense app</h3>
+function Home(){
+    return (
+        <div className="container">
+            <h3 className="text-center">Welcome to Expense App</h3>
         </div>
     );
 }
