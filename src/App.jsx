@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -12,6 +13,23 @@ import UserLayout from "./components/UserLayout";
 function App() {
   const [userDetails, setUserDetails] = useState(null);
 
+  const isUserLoggedIn = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5001/auth/is-user-loggedin",
+        {},
+        { withCredentials: true }
+      );
+      setUserDetails(response.data.user);
+    } catch {
+      setUserDetails(null);
+    }
+  };
+
+  useEffect(() => {
+    isUserLoggedIn();
+  }, []);
+
   return (
     <Routes>
       {/* Public Routes */}
@@ -21,20 +39,32 @@ function App() {
       </Route>
 
       {/* Protected Routes */}
-      {userDetails ? (
-        <Route element={<UserLayout />}>
-          <Route
-            path="/dashboard"
-            element={<Dashboard user={userDetails} />}
-          />
-          <Route
-            path="/logout"
-            element={<Logout setUser={setUserDetails} />}
-          />
-        </Route>
-      ) : (
-        <Route path="*" element={<Navigate to="/login" />} />
-      )}
+      <Route element={<UserLayout />}>
+        <Route
+          path="/dashboard"
+          element={
+            userDetails ? (
+              <Dashboard user={userDetails} />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        <Route
+          path="/logout"
+          element={
+            userDetails ? (
+              <Logout setUser={setUserDetails} />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+      </Route>
+
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   );
 }

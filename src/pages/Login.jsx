@@ -1,7 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-function Login() {
+function Login({ setUser }) {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -49,9 +52,16 @@ function Login() {
         formData,
         { withCredentials: true }
       );
- setUser(response.data.user);
+
+      // ✅ SAVE USER IN STATE
+      setUser(response.data.user);
+
+      // ✅ SUCCESS MESSAGE
       setMessage(response.data.message || "Login successful");
       setErrors({});
+
+      // ✅ REDIRECT TO DASHBOARD
+      navigate("/dashboard");
     } catch (error) {
       setErrors({
         message:
@@ -60,33 +70,6 @@ function Login() {
       });
       setMessage("");
     }
-  };
-
-  /* ================= REGISTER (TEMP) ================= */
-  const registerFirstUser = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:5001/auth/register",
-        {
-          email: formData.email,
-          password: formData.password,
-        }
-      );
-
-      alert(response.data.message);
-    } catch (error) {
-      console.log("LOGIN ERROR FULL:", error);
-      console.log("LOGIN ERROR RESPONSE:", error.response);
-    
-      setErrors({
-        message:
-          error.response?.data?.message ||
-          error.message ||
-          "Login failed",
-      });
-      setMessage("");
-    }
-    
   };
 
   return (
@@ -132,17 +115,8 @@ function Login() {
           )}
         </div>
 
-        <button className="btn btn-primary me-2" type="submit">
+        <button className="btn btn-primary" type="submit">
           Login
-        </button>
-
-        {/* TEMP BUTTON – click once, then remove */}
-        <button
-          type="button"
-          className="btn btn-secondary"
-          onClick={registerFirstUser}
-        >
-          Register First User
         </button>
       </form>
     </div>

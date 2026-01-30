@@ -1,7 +1,7 @@
 function Dashboard({ user }) {
     return (
-      <div style={{ textAlign: "center" }}>
-        <h3>Welcome, {user?.name}</h3>
+      <div className="container mt-4">
+        <h2>Welcome {user.email}</h2>
       </div>
     );
   }
