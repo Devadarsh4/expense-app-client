@@ -49,7 +49,7 @@ function Login() {
         formData,
         { withCredentials: true }
       );
-
+ setUser(response.data.user);
       setMessage(response.data.message || "Login successful");
       setErrors({});
     } catch (error) {
