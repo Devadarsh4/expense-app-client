@@ -1,14 +1,23 @@
-import Header from "./Header";
-import Footer from "./Footer";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 
-function AppLayout({ children }){
-    return(
-        <>
-            <Header/>
-            {children}
-            <Footer/>
-        </>
-    )
+function UserLayout({ setUser }) {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    setUser(null);        // logout
+    navigate("/login");  // redirect
+  };
+
+  return (
+    <>
+      <nav style={{ padding: "10px", background: "#eee" }}>
+        <Link to="/dashboard">Dashboard</Link>{" | "}
+        <button onClick={handleLogout}>Logout</button>
+      </nav>
+
+      <Outlet />
+    </>
+  );
 }
 
-export default AppLayout;
+export default UserLayout;
