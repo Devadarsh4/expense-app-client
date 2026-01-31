@@ -71,6 +71,7 @@ function Login({ setUser }) {
       setMessage("");
     }
   };
+  <div className="row justify-context-center"> </div>
 
   return (
     <div className="container text-center">

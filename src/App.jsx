@@ -12,23 +12,35 @@ import UserLayout from "./components/UserLayout";
 
 function App() {
   const [userDetails, setUserDetails] = useState(null);
+  const [loading, setLoading] = useState(true); // ✅ FIX
 
   const isUserLoggedIn = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5001/auth/is-user-loggedin",
+        "http://localhost:5001/auth/is-user-logged-in", // ✅ FIX
         {},
         { withCredentials: true }
       );
       setUserDetails(response.data.user);
-    } catch {
+    } catch (error) {
       setUserDetails(null);
+    } finally {
+      setLoading(false); // ✅ VERY IMPORTANT
     }
   };
 
   useEffect(() => {
     isUserLoggedIn();
   }, []);
+
+  // ⛔ WAIT until auth check finishes
+  if (loading) {
+    return (
+      <div className="container text-center">
+        <h3>Loading...</h3>
+      </div>
+    );
+  }
 
   return (
     <Routes>
