@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { GoogleLogin } from "@react-oauth/google";
 
 function Login({ setUser }) {
   const navigate = useNavigate();
@@ -11,40 +12,15 @@ function Login({ setUser }) {
   });
 
   const [errors, setErrors] = useState({});
-  const [message, setMessage] = useState("");
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData({ ...formData, [name]: value });
   };
 
-  const validate = () => {
-    let newError = {};
-    let isValid = true;
-
-    if (!formData.email) {
-      newError.email = "Email is required";
-      isValid = false;
-    }
-
-    if (!formData.password) {
-      newError.password = "Password is required";
-      isValid = false;
-    }
-
-    setErrors(newError);
-    return isValid;
-  };
-
-  /* ================= LOGIN ================= */
+  /* ================= EMAIL LOGIN ================= */
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-
-    if (!validate()) return;
 
     try {
       const response = await axios.post(
@@ -53,25 +29,31 @@ function Login({ setUser }) {
         { withCredentials: true }
       );
 
-      // ✅ SAVE USER IN STATE
       setUser(response.data.user);
-
-      // ✅ SUCCESS MESSAGE
-      setMessage(response.data.message || "Login successful");
-      setErrors({});
-
-      // ✅ REDIRECT TO DASHBOARD
       navigate("/dashboard");
     } catch (error) {
       setErrors({
         message:
-          error.response?.data?.message ||
-          "Something went wrong. Please try again later",
+          error.response?.data?.message || "Login failed",
       });
-      setMessage("");
     }
   };
-  <div className="row justify-context-center"> </div>
+
+  /* ================= GOOGLE LOGIN ================= */
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5001/auth/google-auth", // ✅ FIXED
+        { idToken: credentialResponse.credential },
+        { withCredentials: true }
+      );
+
+      setUser(response.data.user);
+      navigate("/dashboard");
+    } catch (error) {
+      setErrors({ message: "Google login failed" });
+    }
+  };
 
   return (
     <div className="container text-center">
@@ -81,45 +63,43 @@ function Login({ setUser }) {
         <div className="alert alert-danger">{errors.message}</div>
       )}
 
-      {message && (
-        <div className="alert alert-success">{message}</div>
-      )}
-
       <form onSubmit={handleFormSubmit}>
         <div className="mb-3">
-          <label>Email:</label>
           <input
             className="form-control"
             type="email"
             name="email"
-            value={formData.email}
             placeholder="Enter email"
+            value={formData.email}
             onChange={handleChange}
           />
-          {errors.email && (
-            <div className="text-danger">{errors.email}</div>
-          )}
         </div>
 
         <div className="mb-3">
-          <label>Password:</label>
           <input
             className="form-control"
             type="password"
             name="password"
-            value={formData.password}
             placeholder="Enter password"
+            value={formData.password}
             onChange={handleChange}
           />
-          {errors.password && (
-            <div className="text-danger">{errors.password}</div>
-          )}
         </div>
 
-        <button className="btn btn-primary" type="submit">
+        <button className="btn btn-primary w-100 mb-3">
           Login
         </button>
       </form>
+
+      <hr />
+
+      {/* 🔐 GOOGLE LOGIN */}
+      <GoogleLogin
+        onSuccess={handleGoogleSuccess}
+        onError={() =>
+          setErrors({ message: "Google Login Failed" })
+        }
+      />
     </div>
   );
 }

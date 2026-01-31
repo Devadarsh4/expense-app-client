@@ -1,84 +1,134 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { GoogleLogin } from "@react-oauth/google";
 
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import Logout from "./pages/Logout";
+function Login({ setUser }) {
+  const navigate = useNavigate();
 
-import AppLayout from "./components/AppLayout";
-import UserLayout from "./components/UserLayout";
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
-function App() {
-  const [userDetails, setUserDetails] = useState(null);
-  const [loading, setLoading] = useState(true); // ✅ FIX
+  const [errors, setErrors] = useState({});
+  const [message, setMessage] = useState("");
 
-  const isUserLoggedIn = async () => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const validate = () => {
+    let err = {};
+    if (!formData.email) err.email = "Email is required";
+    if (!formData.password) err.password = "Password is required";
+    setErrors(err);
+    return Object.keys(err).length === 0;
+  };
+
+  /* ================= EMAIL LOGIN ================= */
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+
     try {
       const response = await axios.post(
-        "http://localhost:5001/auth/is-user-logged-in", // ✅ FIX
-        {},
+        "http://localhost:5001/auth/login",
+        formData,
         { withCredentials: true }
       );
-      setUserDetails(response.data.user);
+
+      setUser(response.data.user);
+      setMessage("Login successful");
+      setErrors({});
+      navigate("/dashboard");
     } catch (error) {
-      setUserDetails(null);
-    } finally {
-      setLoading(false); // ✅ VERY IMPORTANT
+      setErrors({
+        message:
+          error.response?.data?.message ||
+          "Login failed. Try again.",
+      });
+      setMessage("");
     }
   };
 
-  useEffect(() => {
-    isUserLoggedIn();
-  }, []);
+  /* ================= GOOGLE LOGIN ================= */
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5001/auth/google-login",
+        {
+          token: credentialResponse.credential,
+        },
+        { withCredentials: true }
+      );
 
-  // ⛔ WAIT until auth check finishes
-  if (loading) {
-    return (
-      <div className="container text-center">
-        <h3>Loading...</h3>
-      </div>
-    );
-  }
+      setUser(response.data.user);
+      navigate("/dashboard");
+    } catch (error) {
+      setErrors({ message: "Google login failed" });
+    }
+  };
 
   return (
-    <Routes>
-      {/* Public Routes */}
-      <Route element={<AppLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login setUser={setUserDetails} />} />
-      </Route>
+    <div className="container text-center mt-5">
+      <h3>Login to continue</h3>
 
-      {/* Protected Routes */}
-      <Route element={<UserLayout />}>
-        <Route
-          path="/dashboard"
-          element={
-            userDetails ? (
-              <Dashboard user={userDetails} />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
+      {errors.message && (
+        <div className="alert alert-danger">{errors.message}</div>
+      )}
 
-        <Route
-          path="/logout"
-          element={
-            userDetails ? (
-              <Logout setUser={setUserDetails} />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-      </Route>
+      {message && (
+        <div className="alert alert-success">{message}</div>
+      )}
 
-      {/* Fallback */}
-      <Route path="*" element={<Navigate to="/login" />} />
-    </Routes>
+      <form onSubmit={handleFormSubmit}>
+        <div className="mb-3">
+          <label>Email</label>
+          <input
+            className="form-control"
+            type="email"
+            name="email"
+            value={formData.email}
+            placeholder="Enter email"
+            onChange={handleChange}
+          />
+          {errors.email && (
+            <div className="text-danger">{errors.email}</div>
+          )}
+        </div>
+
+        <div className="mb-3">
+          <label>Password</label>
+          <input
+            className="form-control"
+            type="password"
+            name="password"
+            value={formData.password}
+            placeholder="Enter password"
+            onChange={handleChange}
+          />
+          {errors.password && (
+            <div className="text-danger">{errors.password}</div>
+          )}
+        </div>
+
+        <button className="btn btn-primary w-100" type="submit">
+          Login
+        </button>
+      </form>
+
+      <hr />
+
+      <GoogleLogin
+        onSuccess={handleGoogleSuccess}
+        onError={() =>
+          setErrors({ message: "Google login failed" })
+        }
+      />
+    </div>
   );
 }
 
-export default App;
+export default Login;
