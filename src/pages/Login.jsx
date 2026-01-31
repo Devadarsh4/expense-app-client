@@ -12,6 +12,7 @@ function Login({ setUser }) {
   });
 
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -21,6 +22,7 @@ function Login({ setUser }) {
   /* ================= EMAIL LOGIN ================= */
   const handleFormSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
 
     try {
       const response = await axios.post(
@@ -36,14 +38,21 @@ function Login({ setUser }) {
         message:
           error.response?.data?.message || "Login failed",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   /* ================= GOOGLE LOGIN ================= */
   const handleGoogleSuccess = async (credentialResponse) => {
+    if (!credentialResponse?.credential) {
+      setErrors({ message: "Google token missing" });
+      return;
+    }
+
     try {
       const response = await axios.post(
-        "http://localhost:5001/auth/google-auth", // ✅ FIXED
+        "http://localhost:5001/auth/google-auth",
         { idToken: credentialResponse.credential },
         { withCredentials: true }
       );
@@ -86,8 +95,8 @@ function Login({ setUser }) {
           />
         </div>
 
-        <button className="btn btn-primary w-100 mb-3">
-          Login
+        <button className="btn btn-primary w-100 mb-3" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
         </button>
       </form>
 
