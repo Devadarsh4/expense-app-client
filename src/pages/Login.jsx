@@ -90,7 +90,7 @@ function Login({ setUser }) {
             type="password"
             name="password"
             placeholder="Enter password"
-            value={formData.password}
+            value={formData.password
             onChange={handleChange}
           />
         </div>
