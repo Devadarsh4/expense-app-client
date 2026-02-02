@@ -84,7 +84,7 @@ function Login({ setUser }) {
           required
         />
 
-        <input
+        <inpu
           className="form-control mb-3"
           type="password"
           name="password"
