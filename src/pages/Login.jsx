@@ -11,33 +11,33 @@ function Login({ setUser }) {
     password: "",
   });
 
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  /* ================= INPUT CHANGE ================= */
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   /* ================= EMAIL LOGIN ================= */
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
     setLoading(true);
-    setError("");
 
     try {
-      const res = await axios.post(
+      const response = await axios.post(
         "http://localhost:5001/auth/login",
         formData,
         { withCredentials: true }
       );
 
-      // ✅ make sure backend returns user
-      setUser(res.data.user);
+      setUser(response.data.user);
       navigate("/dashboard");
-    } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+    } catch (error) {
+      setErrors({
+        message:
+          error.response?.data?.message || "Login failed",
+      });
     } finally {
       setLoading(false);
     }
@@ -45,68 +45,70 @@ function Login({ setUser }) {
 
   /* ================= GOOGLE LOGIN ================= */
   const handleGoogleSuccess = async (credentialResponse) => {
-    try {
-      if (!credentialResponse?.credential) {
-        setError("Google token missing");
-        return;
-      }
+    if (!credentialResponse?.credential) {
+      setErrors({ message: "Google token missing" });
+      return;
+    }
 
-      const res = await axios.post(
+    try {
+      const response = await axios.post(
         "http://localhost:5001/auth/google-auth",
-        {
-          idToken: credentialResponse.credential, // ✅ must match backend
-        },
+        { idToken: credentialResponse.credential },
         { withCredentials: true }
       );
 
-      setUser(res.data.user);
+      setUser(response.data.user);
       navigate("/dashboard");
-    } catch (err) {
-      console.error("Google login error:", err);
-      setError("Google login failed");
+    } catch (error) {
+      setErrors({ message: "Google login failed" });
     }
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: "420px" }}>
-      <h3 className="text-center mb-3">Login to continue</h3>
+    <div className="container text-center">
+      <h3>Login to continue</h3>
 
-      {error && <div className="alert alert-danger">{error}</div>}
+      {errors.message && (
+        <div className="alert alert-danger">{errors.message}</div>
+      )}
 
       <form onSubmit={handleFormSubmit}>
-        <input
-          className="form-control mb-3"
-          type="email"
-          name="email"
-          placeholder="Enter email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
+        <div className="mb-3">
+          <input
+            className="form-control"
+            type="email"
+            name="email"
+            placeholder="Enter email"
+            value={formData.email}
+            onChange={handleChange}
+          />
+        </div>
 
-        <inpu
-          className="form-control mb-3"
-          type="password"
-          name="password"
-          placeholder="Enter password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
+        <div className="mb-3">
+          <input
+            className="form-control"
+            type="password"
+            name="password"
+            placeholder="Enter password"
+            value={formData.password}
+            onChange={handleChange}
+          />
+        </div>
 
         <button className="btn btn-primary w-100 mb-3" disabled={loading}>
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
 
-      <div className="text-center mb-2">OR</div>
+      <hr />
 
-      <div className="d-flex justify-content-center">
-        <GoogleLogin
-          onSuccess={handleGoogleSuccess}
-          onError={() => setError("Google login failed")}
-        />
-      </div>
+      {/* 🔐 GOOGLE LOGIN */}
+      <GoogleLogin
+        onSuccess={handleGoogleSuccess}
+        onError={() =>
+          setErrors({ message: "Google Login Failed" })
+        }
+      />
     </div>
   );
 }
