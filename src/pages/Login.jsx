@@ -93,7 +93,7 @@ function Login({ setUser }) {
             value={formData.password}
             onChange={handleChange}
           />
-        </div>
+        </div
 
         <button className="btn btn-primary w-100 mb-3" disabled={loading}>
           {loading ? "Logging in..." : "Login"}
