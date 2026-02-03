@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { GoogleLogin } from "@react-oauth/google";
+import { serverEndpoint } from "../config/appConfig";
 
 function Login({ setUser }) {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ function Login({ setUser }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:5001/auth/login",
+        `${serverEndpoint}/auth/login`,
         formData,
         { withCredentials: true }
       );
@@ -52,7 +53,7 @@ function Login({ setUser }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:5001/auth/google-auth",
+        `${serverEndpoint}/auth/google-auth`,
         { idToken: credentialResponse.credential },
         { withCredentials: true }
       );

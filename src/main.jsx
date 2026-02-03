@@ -7,9 +7,6 @@ import App from "./App";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
-// 🔍 DEBUG (must print your client ID)
-console.log("Google Client ID:", import.meta.env.VITE_GOOGLE_CLIENT_ID);
-
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>

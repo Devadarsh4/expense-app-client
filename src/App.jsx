@@ -4,9 +4,12 @@ import axios from "axios";
 
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Logout from "./pages/Logout";
+import UserLayout from "./components/UserLayout";
+import { serverEndpoint } from "./config/appConfig";
 
 function App() {
-  const [user, setUser] = useState(null);
+  const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // ✅ Check if user already logged in (JWT cookie)
@@ -14,13 +17,13 @@ function App() {
     const checkAuth = async () => {
       try {
         const res = await axios.post(
-          "http://localhost:5001/auth/is-user-logged-in",
+          `${serverEndpoint}/auth/is-user-logged-in`,
           {},
           { withCredentials: true }
         );
-        setUser(res.data.user);
+        setUserDetails(res.data.user);
       } catch (err) {
-        setUser(null);
+        setUserDetails(null);
       } finally {
         setLoading(false);
       }
@@ -39,24 +42,32 @@ function App() {
       <Route
         path="/"
         element={
-          user ? (
+          userDetails ? (
             <Navigate to="/dashboard" />
           ) : (
-            <Login setUser={setUser} />   // ✅ IMPORTANT
+            <Login setUser={setUserDetails} />
           )
         }
       />
 
-      {/* 📊 DASHBOARD */}
+      {/* 📊 DASHBOARD (Protected + Layout) */}
       <Route
         path="/dashboard"
         element={
-          user ? (
-            <Dashboard user={user} setUser={setUser} />
+          userDetails ? (
+            <UserLayout user={userDetails}>
+              <Dashboard user={userDetails} />
+            </UserLayout>
           ) : (
             <Navigate to="/" />
           )
         }
+      />
+
+      {/* 🚪 LOGOUT */}
+      <Route
+        path="/logout"
+        element={<Logout setUser={setUserDetails} />}
       />
     </Routes>
   );
