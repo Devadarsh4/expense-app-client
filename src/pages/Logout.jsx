@@ -1,32 +1,32 @@
+import axios from "axios";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { serverEndpoint } from "../config/appConfig";
+import { useDispatch } from "react-redux";
+import { CLEAR_USER } from "../redux/user/action";
 
-function Logout({ setUser }) {
+function Logout() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const logout = async () => {
+    const handleLogout = async () => {
       try {
         await axios.post(
           `${serverEndpoint}/auth/logout`,
           {},
           { withCredentials: true }
         );
-
-        setUser(null);
-
-        // ✅ REDIRECT AFTER LOGOUT
-        navigate("/");
       } catch (error) {
-        console.log("Logout failed:", error);
-        navigate("/");
+        console.log(error);
+      } finally {
+        dispatch({ type: CLEAR_USER });
+        navigate("/login");
       }
     };
 
-    logout();
-  }, [navigate, setUser]);
+    handleLogout();
+  }, [dispatch, navigate]);
 
   return <p>Logging out...</p>;
 }
