@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Logout from "./pages/Logout";
+import Groups from "./pages/Groups";
+
 import UserLayout from "./components/UserLayout";
+import AppLayout from "./components/AppLayout";
+
 import { serverEndpoint } from "./config/appConfig";
 import { SET_USER } from "./redux/user/action";
 
@@ -15,11 +19,11 @@ function App() {
   const userDetails = useSelector((state) => state.userDetails);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Check login from cookie (JWT / refresh flow later)
+  // ✅ Check if user already logged in
   useEffect(() => {
-    const checkAuth = async () => {
+    const isUserLoggedIn = async () => {
       try {
-        const res = await axios.post(
+        const response = await axios.post(
           `${serverEndpoint}/auth/is-user-logged-in`,
           {},
           { withCredentials: true }
@@ -27,17 +31,16 @@ function App() {
 
         dispatch({
           type: SET_USER,
-          payload: res.data.user,
+          payload: response.data.user,
         });
       } catch (error) {
-        // user not logged in → do nothing (state remains null)
-        console.log("Not logged in");
+        console.log(error);
       } finally {
         setLoading(false);
       }
     };
 
-    checkAuth();
+    isUserLoggedIn();
   }, [dispatch]);
 
   if (loading) {
@@ -48,13 +51,19 @@ function App() {
     <Routes>
       {/* 🔐 LOGIN */}
       <Route
-        path="/"
+        path="/login"
         element={
-          userDetails ? <Navigate to="/dashboard" /> : <Login />
+          userDetails ? (
+            <Navigate to="/dashboard" />
+          ) : (
+            <AppLayout>
+              <Login />
+            </AppLayout>
+          )
         }
       />
 
-      {/* 📊 DASHBOARD (Protected + Layout) */}
+      {/* 📊 DASHBOARD */}
       <Route
         path="/dashboard"
         element={
@@ -63,7 +72,21 @@ function App() {
               <Dashboard />
             </UserLayout>
           ) : (
-            <Navigate to="/" />
+            <Navigate to="/login" />
+          )
+        }
+      />
+
+      {/* 👥 GROUPS */}
+      <Route
+        path="/groups"
+        element={
+          userDetails ? (
+            <UserLayout>
+              <Groups />
+            </UserLayout>
+          ) : (
+            <Navigate to="/login" />
           )
         }
       />
@@ -72,9 +95,12 @@ function App() {
       <Route
         path="/logout"
         element={
-          userDetails ? <Logout /> : <Navigate to="/" />
+          userDetails ? <Logout /> : <Navigate to="/login" />
         }
       />
+
+      {/* ❌ FALLBACK */}
+      <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   );
 }

@@ -10,11 +10,12 @@ function GroupCard({ group }) {
   return (
     <div className="card h-100 border-0 shadow-sm rounded-4 position-relative">
       <div className="card-body p-4">
-        <div>
-          <h5>{group.name}</h5>
+        {/* GROUP NAME + TOGGLE */}
+        <div className="mb-2">
+          <h5 className="mb-1">{group.name}</h5>
 
           <button
-            className="btn btn-sm btn-link p-0 text-primary"
+            className="btn btn-sm btn-link p-0"
             onClick={handleShowMember}
           >
             {group.membersEmail.length} Members |{" "}
@@ -22,15 +23,17 @@ function GroupCard({ group }) {
           </button>
         </div>
 
-        <p className="mt-2">{group.description}</p>
+        {/* DESCRIPTION */}
+        <p className="text-muted">{group.description}</p>
 
+        {/* MEMBERS LIST */}
         {showMembers && (
-          <div className="rounded-3 p-3 mb-3 border">
-            <h6>Members in the Group</h6>
+          <div className="rounded-3 p-3 mt-3 border">
+            <h6>Members in this Group</h6>
 
-            {group.membersEmail.map((email, index) => (
-              <div key={index} className="small">
-                {email}
+            {group.membersEmail.map((member, index) => (
+              <div key={index}>
+                {index + 1}. {member}
               </div>
             ))}
           </div>

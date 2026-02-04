@@ -1,5 +1,4 @@
-import { CLEAR_USER } from "./action";
-
+import { SET_USER, CLEAR_USER } from "./action"; // ✅ REQUIRED IMPORT
 
 export const userReducer = (state = null, action) => {
     switch (action.type) {
@@ -11,7 +10,5 @@ export const userReducer = (state = null, action) => {
 
         default:
             return state;
-
     }
-
 };

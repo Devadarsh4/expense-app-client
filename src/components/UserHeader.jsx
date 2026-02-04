@@ -10,10 +10,12 @@ function UserHeader() {
       data-bs-theme="dark"
     >
       <div className="container">
+        {/* BRAND */}
         <Link className="navbar-brand" to="/dashboard">
           Dashboard
         </Link>
 
+        {/* TOGGLER */}
         <button
           className="navbar-toggler"
           type="button"
@@ -26,11 +28,18 @@ function UserHeader() {
           <span className="navbar-toggler-icon" />
         </button>
 
+        {/* NAV CONTENT */}
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          {/* Left side */}
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0"></ul>
+          {/* LEFT SIDE */}
+          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+            <li className="nav-item">
+              <Link className="nav-link" to="/groups">
+                My Groups
+              </Link>
+            </li>
+          </ul>
 
-          {/* Right side */}
+          {/* RIGHT SIDE */}
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
             <li className="nav-item dropdown">
               <span
