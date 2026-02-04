@@ -11,6 +11,13 @@ function GroupCard({ group}) {
                 {group.membersEmail.length} Member | Show Members
             </button>
         </div>
+        <p>{group.description}</p>
+        {showMembers && (
+            <div className="rounded-3 p-3 mb-3 border">
+<h6>Members in the Group    </h6>
+{group.membersEmail.map((email,index)=>(
+    <div key={index+1},{member}</div>
+        )}
     </div>
 </div>
 }
