@@ -1,12 +1,13 @@
+import { Outlet } from "react-router-dom";
 import UserHeader from "./UserHeader";
 import UserFooter from "./UserFooter";
 
-function UserLayout({ user, children }) {
+function UserLayout() {
   return (
     <>
-      <UserHeader user={user} />
+      <UserHeader />
       <main className="container my-4">
-        {children}
+        <Outlet />
       </main>
       <UserFooter />
     </>

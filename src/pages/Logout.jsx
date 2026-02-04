@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import axios from "axios";
 
 import { serverEndpoint } from "../config/appConfig";
-import { CLEAR_USER } from "../redux/user/action";
+import { SET_USER } from "../redux/user/action";
 
 function Logout() {
   const dispatch = useDispatch();
@@ -21,8 +21,7 @@ function Logout() {
       } catch (error) {
         console.error("Logout failed:", error);
       } finally {
-        // Clear Redux state and redirect
-        dispatch({ type: CLEAR_USER });
+        dispatch({ type: SET_USER, payload: null });
         navigate("/login");
       }
     };

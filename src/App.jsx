@@ -5,11 +5,10 @@ import { useSelector, useDispatch } from "react-redux";
 
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import Logout from "./pages/Logout";
 import Groups from "./pages/Groups";
+import Logout from "./pages/Logout";
 
 import UserLayout from "./components/UserLayout";
-import AppLayout from "./components/AppLayout";
 
 import { serverEndpoint } from "./config/appConfig";
 import { SET_USER } from "./redux/user/action";
@@ -19,7 +18,8 @@ function App() {
   const userDetails = useSelector((state) => state.userDetails);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Check if user already logged in
+  const isAuthenticated = Boolean(userDetails?._id);
+
   useEffect(() => {
     const isUserLoggedIn = async () => {
       try {
@@ -34,7 +34,9 @@ function App() {
           payload: response.data.user,
         });
       } catch (error) {
-        console.log(error);
+        if (error.response?.status !== 401) {
+          console.error(error);
+        }
       } finally {
         setLoading(false);
       }
@@ -49,55 +51,26 @@ function App() {
 
   return (
     <Routes>
-      {/* 🔐 LOGIN */}
+      {/* 🔓 PUBLIC LOGIN (NO LAYOUT) */}
       <Route
         path="/login"
         element={
-          userDetails ? (
-            <Navigate to="/dashboard" />
-          ) : (
-            <AppLayout>
-              <Login />
-            </AppLayout>
-          )
+          isAuthenticated ? <Navigate to="/dashboard" /> : <Login />
         }
       />
 
-      {/* 📊 DASHBOARD */}
+      {/* 🔐 PRIVATE ROUTES (WITH UserLayout) */}
       <Route
-        path="/dashboard"
         element={
-          userDetails ? (
-            <UserLayout>
-              <Dashboard />
-            </UserLayout>
-          ) : (
-            <Navigate to="/login" />
-          )
+          isAuthenticated ? <UserLayout /> : <Navigate to="/login" />
         }
-      />
-
-      {/* 👥 GROUPS */}
-      <Route
-        path="/groups"
-        element={
-          userDetails ? (
-            <UserLayout>
-              <Groups />
-            </UserLayout>
-          ) : (
-            <Navigate to="/login" />
-          )
-        }
-      />
+      >
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/groups" element={<Groups />} />
+      </Route>
 
       {/* 🚪 LOGOUT */}
-      <Route
-        path="/logout"
-        element={
-          userDetails ? <Logout /> : <Navigate to="/login" />
-        }
-      />
+      <Route path="/logout" element={<Logout />} />
 
       {/* ❌ FALLBACK */}
       <Route path="*" element={<Navigate to="/login" />} />

@@ -2,16 +2,14 @@ import axios from "axios";
 import { useState } from "react";
 import { serverEndpoint } from "../config/appConfig";
 
-function CreateGroupModal({ show, onHide }) {
+function CreateGroupModal({ show, onHide, onSuccess }) {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
   });
 
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
 
-  /* ================= VALIDATION ================= */
   const validate = () => {
     let isValid = true;
     const newErrors = {};
@@ -30,25 +28,20 @@ function CreateGroupModal({ show, onHide }) {
     return isValid;
   };
 
-  /* ================= INPUT CHANGE ================= */
   const onChange = (e) => {
     const { name, value } = e.target;
-
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
 
-  /* ================= SUBMIT ================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validate()) return;
 
     try {
-      setLoading(true);
-
       await axios.post(
         `${serverEndpoint}/groups/create`,
         {
@@ -58,48 +51,44 @@ function CreateGroupModal({ show, onHide }) {
         { withCredentials: true }
       );
 
-      // reset form
+      // ✅ notify parent & close modal
+      onSuccess();
+      onHide();
+
+      // optional: reset form
       setFormData({ name: "", description: "" });
       setErrors({});
-
-      // close modal
-      onHide();
     } catch (error) {
       console.log(error);
       setErrors({
         message: "Unable to add group, please try again",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
   if (!show) return null;
 
-  /* ================= UI ================= */
   return (
-    <div className="modal show d-block" style={{ background: "rgba(0,0,0,0.5)" }}>
+    <div className="modal show d-block" tabIndex="-1">
       <div className="modal-dialog modal-dialog-centered">
         <div className="modal-content border-0 rounded-4 shadow">
           <form onSubmit={handleSubmit}>
-            {/* HEADER */}
             <div className="modal-header border-0">
-              <h5 className="modal-title">Create Group</h5>
+              <h5 className="modal-title fw-bold">Create Group</h5>
               <button
                 type="button"
                 className="btn-close"
                 onClick={onHide}
-              ></button>
+              />
             </div>
 
-            {/* BODY */}
             <div className="modal-body">
-              {/* GLOBAL ERROR */}
               {errors.message && (
-                <div className="alert alert-danger">{errors.message}</div>
+                <div className="alert alert-danger small">
+                  {errors.message}
+                </div>
               )}
 
-              {/* NAME */}
               <div className="mb-3">
                 <label className="form-label small fw-bold">
                   Group Name
@@ -116,11 +105,12 @@ function CreateGroupModal({ show, onHide }) {
                   }
                 />
                 {errors.name && (
-                  <div className="invalid-feedback">{errors.name}</div>
+                  <div className="invalid-feedback">
+                    {errors.name}
+                  </div>
                 )}
               </div>
 
-              {/* DESCRIPTION */}
               <div className="mb-3">
                 <label className="form-label small fw-bold">
                   Description
@@ -144,23 +134,19 @@ function CreateGroupModal({ show, onHide }) {
               </div>
             </div>
 
-            {/* FOOTER */}
             <div className="modal-footer border-0">
               <button
                 type="button"
                 className="btn btn-light rounded-pill"
                 onClick={onHide}
-                disabled={loading}
               >
                 Cancel
               </button>
-
               <button
                 type="submit"
                 className="btn btn-primary rounded-pill px-4"
-                disabled={loading}
               >
-                {loading ? "Adding..." : "Add"}
+                Add
               </button>
             </div>
           </form>

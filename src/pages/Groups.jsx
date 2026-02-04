@@ -5,11 +5,10 @@ import GroupCard from "../components/GroupCard";
 import CreateGroupModal from "../components/CreateGroupModal";
 
 function Groups() {
-  const [groups, setGroups] = useState([]);
+  const [groups, setGroups] = useState([]); // ✅ array
   const [loading, setLoading] = useState(true);
-  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [show, setShow] = useState(false);
 
-  /* ================= FETCH GROUPS ================= */
   const fetchGroups = async () => {
     try {
       const response = await axios.get(
@@ -28,7 +27,6 @@ function Groups() {
     fetchGroups();
   }, []);
 
-  /* ================= LOADING ================= */
   if (loading) {
     return (
       <div className="container p-5 text-center">
@@ -37,7 +35,6 @@ function Groups() {
     );
   }
 
-  /* ================= UI ================= */
   return (
     <div className="container p-5">
       {/* HEADER */}
@@ -51,7 +48,7 @@ function Groups() {
 
         <button
           className="btn btn-primary rounded-pill px-4 fw-bold shadow-sm"
-          onClick={() => setShowCreateModal(true)}
+          onClick={() => setShow(true)}
         >
           Create Group
         </button>
@@ -59,9 +56,9 @@ function Groups() {
 
       {/* EMPTY STATE */}
       {groups.length === 0 && (
-        <div className="text-center">
-          <p>No groups found, Start by creating one!</p>
-        </div>
+        <p className="text-center">
+          No groups found, Start by creating one!
+        </p>
       )}
 
       {/* GROUP LIST */}
@@ -77,10 +74,12 @@ function Groups() {
 
       {/* CREATE GROUP MODAL */}
       <CreateGroupModal
-        show={showCreateModal}
-        onHide={() => {
-          setShowCreateModal(false);
-          fetchGroups(); // 🔥 refresh groups after create
+        show={show}
+        onHide={(refresh) => {
+          setShow(false);
+          if (refresh) {
+            fetchGroups(); // ✅ refresh after create
+          }
         }}
       />
     </div>
