@@ -141,7 +141,7 @@ function ManageUsers() {
     setErrors({});
   };
 
-  // ---------------- LOADING 
+  // LOADING 
   if (loading) {
     return (
       <div className="container p-5 text-center">
