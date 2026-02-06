@@ -150,7 +150,7 @@ function ManageUsers() {
     );
   }
 
-  // ---------------- UI 
+  //  UI 
   return (
     <div className="container py-5">
       {errors.message && (
