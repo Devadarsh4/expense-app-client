@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { serverEndpoint } from "../config/appConfig";
 
-function CreateGroupModal({ show, onHide, onSuccess }) {
+function CreateGroupModal({ show, onHide }) {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -51,9 +51,8 @@ function CreateGroupModal({ show, onHide, onSuccess }) {
         { withCredentials: true }
       );
 
-      // ✅ notify parent & close modal
-      onSuccess();
-      onHide();
+      // notify parent & close modal
+      onHide(true);
 
       // optional: reset form
       setFormData({ name: "", description: "" });

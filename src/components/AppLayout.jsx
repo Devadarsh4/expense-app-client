@@ -1,26 +1,16 @@
-import { Outlet, useNavigate } from "react-router-dom";
-import UserHeader from "./UserHeader";
 import Footer from "./Footer";
+import Header from "./Header"; // Assuming there's a generic header for non-logged in users
 
-function UserLayout() {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    // Just navigate to logout route
-    navigate("/logout");
-  };
-
+function AppLayout({ children }) {
   return (
     <>
-      <UserHeader onLogout={handleLogout} />
-
+      <Header />
       <main className="container my-4">
-        <Outlet />
+        {children}
       </main>
-
       <Footer />
     </>
   );
 }
 
-export default UserLayout;
+export default AppLayout;

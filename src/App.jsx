@@ -1,6 +1,8 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ResetPassword from "./pages/ResetPassword";
 import AppLayout from "./components/AppLayout";
 import { useEffect, useState } from "react";
 import Dashboard from "./pages/Dashboard";
@@ -11,8 +13,9 @@ import { serverEndpoint } from "./config/appConfig";
 import { useSelector, useDispatch } from "react-redux";
 import { SET_USER } from "./redux/user/action";
 import Groups from "./pages/Groups";
-import GroupExpenses from "./pages/GroupExpenses";
 import ManageUsers from "./pages/ManageUsers";
+import ProtectedRoute from "./rbac/ProtectedRoute";
+import UnauthorizedAccess from "./components/errors/UnauthorizedAccess";
 function App() {
     const dispatch = useDispatch();
     // Value of userDetails represents whether the user
@@ -65,7 +68,7 @@ function App() {
                         <Navigate to="/dashboard" />
                     ) : (
                         <AppLayout>
-                            <Home />
+                            <Login />
                         </AppLayout>
                     )
                 }
@@ -80,6 +83,26 @@ function App() {
                             <Login />
                         </AppLayout>
                     )
+                }
+            />
+            <Route
+                path="/register"
+                element={
+                    userDetails ? (
+                        <Navigate to="/dashboard" />
+                    ) : (
+                        <AppLayout>
+                            <Register />
+                        </AppLayout>
+                    )
+                }
+            />
+            <Route
+                path="/reset-password"
+                element={
+                    <AppLayout>
+                        <ResetPassword />
+                    </AppLayout>
                 }
             />
 
@@ -101,7 +124,8 @@ function App() {
                 element={
                     userDetails ? (
                         <UserLayout>
-                            <GroupExpenses />
+                            {/* <GroupExpenses /> */}
+                            <div>Group Expenses Page (Under Construction)</div>
                         </UserLayout>
                     ) : (
                         <Navigate to="/login" />
@@ -110,18 +134,36 @@ function App() {
             />
 
 
-<Route
+            <Route
+                path="/manage-users"
+                element={
+                    userDetails ? (
+                        <ProtectedRoute roles={["admin"]}>
+                            <UserLayout>
+                                <ManageUsers />
+                            </UserLayout>
+                        </ProtectedRoute>
+                    ) : (
+                        <Navigate to="/login" />
+                    )
+                }
+            />
 
- path="/manage-users"
- element={
- userDetails ? (
- <UserLayout>
- <ManageUsers />
- </UserLayout>
- ) : (
- <Navigate to="/login" />
- )
- } />
+            <Route
+                path="/unauthorized-access"
+                element={
+                    userDetails ? (
+                        <UserLayout>
+                            <UnauthorizedAccess />
+                        </UserLayout>
+                    ) : (
+                        <AppLayout>
+                            <UnauthorizedAccess />
+                        </AppLayout>
+                    )
+                }
+            />
+
             <Route
                 path="/logout"
                 element={userDetails ? <Logout /> : <Navigate to="/login" />}
