@@ -14,7 +14,7 @@ function GroupExpenses() {
     const [summary, setSummary] = useState({});
     const [group, setGroup] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [showAddModal, setShowAddModal] = useState(false)
+    const [showAddModal, setShowAddModal] = useState(false);
 
     
 
