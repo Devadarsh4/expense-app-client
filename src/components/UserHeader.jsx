@@ -92,7 +92,7 @@ function UserHeader() {
                                             to="/manage-users"
                                         >
                                             <i className="bi bi-person-check me-2"></i>{" "}
-                                            Manage Users
+                                            Manage Users 
                                         </Link>
                                     </li>
                                 )}
