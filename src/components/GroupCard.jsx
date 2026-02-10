@@ -60,6 +60,11 @@ function GroupCard({ group, onUpdate }) {
                         </div>
                     </div>
                 )}
+
+
+                <div className="d-grid mt-3">
+                    <a href={`/groups/${group._id}`} className="btn btn-outline-primary fw-bold">View Expenses</a>
+                </div>
             </div>
         </div>
     );
