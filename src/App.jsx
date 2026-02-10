@@ -16,6 +16,7 @@ import Groups from "./pages/Groups";
 import ManageUsers from "./pages/ManageUsers";
 import ProtectedRoute from "./rbac/ProtectedRoute";
 import UnauthorizedAccess from "./components/errors/UnauthorizedAccess";
+import GroupExpenses from "./pages/GroupExpenses";
 function App() {
     const dispatch = useDispatch();
     // Value of userDetails represents whether the user
@@ -124,8 +125,7 @@ function App() {
                 element={
                     userDetails ? (
                         <UserLayout>
-                            {/* <GroupExpenses /> */}
-                            <div>Group Expenses Page (Under Construction)</div>
+                            <GroupExpenses />
                         </UserLayout>
                     ) : (
                         <Navigate to="/login" />
