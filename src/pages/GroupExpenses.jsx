@@ -15,14 +15,15 @@ function GroupExpenses() {
     const [group, setGroup] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [error, setError] = useState(null);
 
-    
+
 
     const fetchGroupData = async () => {
         try {
             setLoading(true);
 
-            
+
             // For now, I'll proceed assuming I have the endpoint /groups/:groupId
             const groupRes = await axios.get(`${serverEndpoint}/groups/${groupId}`, { withCredentials: true });
             setGroup(groupRes.data);
@@ -33,6 +34,7 @@ function GroupExpenses() {
 
         } catch (error) {
             console.error("Error fetching data:", error);
+            setError(error.response?.data?.message || "Failed to load group data.");
         } finally {
             setLoading(false);
         }
@@ -49,13 +51,18 @@ function GroupExpenses() {
     };
 
     useEffect(() => {
-        fetchGroupData();
+        console.log("GroupExpenses mounted. GroupID:", groupId);
+        if (groupId) {
+            fetchGroupData();
+        }
     }, [groupId]);
 
     if (loading) return <div className="p-5 text-center">Loading...</div>;
 
     return (
         <div className="container p-5">
+            {error && <div className="alert alert-danger">{error}</div>}
+
             <button className="btn btn-outline-secondary mb-4" onClick={() => navigate(-1)}>
                 &larr; Back to Groups
             </button>
