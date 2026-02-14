@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { useState } from "react"
 import { serverEndpoint } from "../config/appConfig";
 import axios from "axios";
@@ -61,13 +60,8 @@ function GroupCard({ group, onUpdate }) {
                         </div>
                     </div>
                 )}
-
-
-                <div className="d-grid mt-3">
-                    <Link to={`/groups/${group._id}`} className="btn btn-outline-primary fw-bold">View Expenses</Link>
-                </div>
             </div>
         </div>
-    )
+    );
 }
 export default GroupCard;
