@@ -51,7 +51,7 @@ function GroupCard({ group, onUpdate }) {
 
                 {permissions.canUpdateGroups && (
                     <div className="mb-3">
-                        <label className="form-label extra-small fw-bold text-secondary">Add Member</label>
+                        <label className="form-label extra-small fw-bold text-secondary">Invite friend</label>
                         <div className="input-group input-group-sm">
                             <input type="email" className="form-control border-end-0" value={memberEmail}
                                 onChange={(e) => setMemberEmail(e.target.value)}
@@ -62,6 +62,6 @@ function GroupCard({ group, onUpdate }) {
                 )}
             </div>
         </div>
-    );
+    )
 }
 export default GroupCard;
