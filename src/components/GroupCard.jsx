@@ -62,6 +62,6 @@ function GroupCard({ group, onUpdate }) {
                 )}
             </div>
         </div>
-    )
+    );
 }
 export default GroupCard;
