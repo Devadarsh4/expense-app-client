@@ -10,7 +10,9 @@ function Groups() {
   const [loading, setLoading] = useState(true);
   const [show, setShow] = useState(false);
   const permissions = usePermission();
-
+// const [currentPage,setCurrentPAGE]=useState(1);
+// CONST [totalPages,setTotalPages]=useState(1);
+// CONST[limit]=useState(3);
   const fetchGroups = async () => {
     try {
       const response = await axios.get(
