@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 function Dashboard() {
   const user = useSelector((state) => state.userDetails);
 
-  if (!user) return null; // prevents crash
+  if (!user) return null; 
 
   return (
     <div className="container text-center">
